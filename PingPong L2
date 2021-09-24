@@ -1,0 +1,38 @@
+import pgzrun
+
+WIDTH = 500
+HEIGHT = 500
+orb = Actor('pongball')
+bat = Actor('paddledown')
+orb.pos = (150,400)
+bat.pos = (200,480)
+vx = 4
+vy =4
+time = 10
+
+def draw():
+    screen.clear()
+    orb.draw()
+    bat.draw()
+    time_string = str(round(time))
+    screen.draw.text('Time: ' + time_string, (230, 0), color='Purple', fontsize=50)
+    screen.draw.text('Score: ' + str(Score), (0, 0), color='Green')
+
+def update(dt):
+    global vx,vy,time
+    time -=dt
+    if orb.right > WIDTH or orb.left <0:
+        vx = -vx
+        sounds.pongwall.play()
+    if orb.colliderect(bat) or orb.top<0:
+        vy= -vy
+        sounds.paddlepong.play()
+    if orb.bottom > HEIGHT or time == 0:
+        exit()
+
+    if (keyboard.right):
+        bat.x += 4
+    if (keyboard.left):
+        bat.x -= 4
+
+pgzrun.go()
