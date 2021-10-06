@@ -1,0 +1,83 @@
+import pgzrun
+
+WIDTH = 600
+HEIGHT = 400
+
+Bat1 = Actor('pongbar')
+Bat1.pos = (0,200)
+Bat2 = Actor('pongbar')
+Bat2.pos =(600,200)
+BG = Actor('background')
+orb = Actor('pongball')
+orb.pos = (300,200)
+Mid = Rect((300,0),(10,400))
+vx =5
+vy =5
+ScoreLeft =0
+ScoreRight=0
+time =5
+Game_Over= False
+Game_End =False
+
+def draw():
+    if Game_Over:
+        screen.draw.text('Game Over', (360, 300), color=('white'), fontsize=50)
+        WinScore()
+    elif Game_End:
+        screen.draw.text('Game Ended', (360, 300), color=('white'), fontsize=50)
+        WinScore()
+    else:
+        screen.clear()
+        BG.draw()
+        screen.draw.filled_rect(Mid,'blue')
+        Bat1.draw()
+        Bat2.draw()
+        orb.draw()
+        time_string = str(round(time))
+        screen.draw.text('Time: '+time_string,(230,0),color='Purple',fontsize=50)
+        screen.draw.text("Score: "+ str(ScoreLeft),(0,0),color='Green')
+        screen.draw.text('Score: '+ str(ScoreRight),(525,0),color='Green')
+
+def update(dt):
+    global time,vx,vy,ScoreRight,ScoreLeft,Game_Over,Game_End
+    time -=dt
+    orb.x +=vx
+    orb.y +=vy
+    #ball movement/velocity
+    if orb.right >WIDTH or orb.left<0:
+        vx = -vx
+        sounds.pongwall.play()
+    if orb.colliderect(Bat1) or orb.colliderect(Bat2):
+        vx = -vx
+        sounds.paddlepong.play()
+    if orb.bottom> HEIGHT or orb.top<0:
+        vy =-vy
+        sounds.pongwall.play()
+    if time <0:
+        Game_Over =True
+    if ScoreLeft == 10:
+        Game_End =True
+    if ScoreRight == 10:
+        Game_End = True
+    #scoring point
+    if orb.right >WIDTH:
+        ScoreLeft +=1
+        sounds.scorepong.play()
+    if orb.left <0:
+        ScoreRight +=1
+        sounds.scorepong.play()
+    #bat1 and 2 control
+    if (keyboard.w):
+        Bat1.y -=4
+    if (keyboard.s):
+        Bat1.y +=4
+    if (keyboard.Up):
+        Bat2.y -=4
+    if (keyboard.Down):
+        Bat2.y +=4
+def WinScore():
+    if ScoreLeft>ScoreRight:
+        screen.draw.text('Player 1 Win', (340, 350), color=('white'), fontsize=50)
+    if ScoreRight>ScoreLeft:
+        screen.draw.text('Player 2 Win', (340, 350), color=('White'), fontsize=50)
+pgzrun.go()
